@@ -78,7 +78,7 @@ const Track = () => {
       try {
         const docRef = doc(db, "driverLocation", trip_id);
         const data = await getDoc(docRef);
-        console.log("this driver location " , data.data());
+        console.log("this driver location ", data.data());
         if (data) setDriverCurrentLocation(data.data());
       } catch (error) {
         console.error(error);
@@ -86,7 +86,7 @@ const Track = () => {
       }
     };
     if (trip_id) getDriverLocation();
-  }, []);
+  }, [trip]);
 
   useEffect(() => {
     if (trip && trip.status === "Active") {
@@ -133,7 +133,7 @@ const Track = () => {
       </div>
     );
 
-  if (!trip || !driverCurrentLocation)
+  if (!trip)
     return (
       <div
         className=""
@@ -150,7 +150,7 @@ const Track = () => {
       </div>
     );
   return (
-    <LoadScript googleMapsApiKey="google_map_api_key">
+    <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_API}>
       <GoogleMap
         mapContainerStyle={{
           height: "100dvh",
@@ -179,19 +179,21 @@ const Track = () => {
           />
         )}
 
-        <OverlayViewF
-          position={{
-            lat: driverCurrentLocation.latitude,
-            lng: driverCurrentLocation.longitude,
-          }}
-          mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-          getPixelPositionOffset={(width, height) => ({
-            x: -(width / 2),
-            y: -height / 2,
-          })}
-        >
-          <img src={TRUCKSVG} height={40} width={40} />
-        </OverlayViewF>
+        {driverCurrentLocation && (
+          <OverlayViewF
+            position={{
+              lat: driverCurrentLocation.latitude,
+              lng: driverCurrentLocation.longitude,
+            }}
+            mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+            getPixelPositionOffset={(width, height) => ({
+              x: -(width / 2),
+              y: -height / 2,
+            })}
+          >
+            <img src={TRUCKSVG} height={40} width={40} />
+          </OverlayViewF>
+        )}
         <TripInfo trip={trip} />
       </GoogleMap>
     </LoadScript>
