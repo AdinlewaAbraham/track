@@ -70,29 +70,34 @@ const Track = () => {
 
     getTrip();
   }, []);
-
+  
   useEffect(() => {
     if (trip && trip.status === "Active") {
-      const unsub = onSnapshot(
-        doc(db, "driverLocation", trip.trip_id),
-        (doc) => {
-          console.log("Current data: ", doc.data());
-          const data = doc.data();
-          if (data) {
-            setDriverCurrentLocation({
-              latitude: data.latitude,
-              longitude: data.longitude,
-            });
-            console.log({
-              latitude: data.latitude,
-              longitude: data.longitude,
-            });
+      try {
+        const unsub = onSnapshot(
+          doc(db, "driverLocation", trip.trip_id),
+          (doc) => {
+            console.log("Current data: ", doc.data());
+            const data = doc.data();
+            if (data) {
+              setDriverCurrentLocation({
+                latitude: data.latitude,
+                longitude: data.longitude,
+              });
+              console.log({
+                latitude: data.latitude,
+                longitude: data.longitude,
+              });
+            }
           }
-        }
-      );
-      return () => unsub();
+        );
+        return () => unsub();
+      } catch (error) {
+        console.error("Error fetching driver location:", error);
+      }
     }
-  }, []);
+  }, [trip]);
+  
   useEffect(() => {
     const getDriverLocation = async () => {
       if (!trip_id) return;
