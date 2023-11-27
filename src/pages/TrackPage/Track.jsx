@@ -70,7 +70,24 @@ const Track = () => {
 
     getTrip();
   }, []);
-  
+
+  useEffect(() => {
+    const getDriverLocation = async () => {
+      console.log("getting driver");
+      if (!trip_id) return;
+      try {
+        const docRef = doc(db, "driverLocation", trip_id);
+        const data = await getDoc(docRef);
+        console.log("this driver location " , data);
+        if (data) setDriverCurrentLocation(data.data());
+      } catch (error) {
+        console.error(error);
+        console.log(error);
+      }
+    };
+    if (trip_id) getDriverLocation();
+  }, []);
+
   useEffect(() => {
     if (trip && trip.status === "Active") {
       try {
@@ -93,20 +110,11 @@ const Track = () => {
         );
         return () => unsub();
       } catch (error) {
+        setFailedToFetch(true);
         console.error("Error fetching driver location:", error);
       }
     }
   }, [trip]);
-  
-  useEffect(() => {
-    const getDriverLocation = async () => {
-      if (!trip_id) return;
-      const docRef = doc(db, "driverLocation", trip_id);
-      const data = await getDoc(docRef);
-      if (data) setDriverCurrentLocation(data.data());
-    };
-    if (trip_id) getDriverLocation();
-  }, []);
 
   if (failedToFetch)
     return (
