@@ -78,7 +78,7 @@ const Track = () => {
       try {
         const docRef = doc(db, "driverLocation", trip_id);
         const data = await getDoc(docRef);
-        console.log("this driver location " , data);
+        console.log("this driver location " , data.data());
         if (data) setDriverCurrentLocation(data.data());
       } catch (error) {
         console.error(error);
